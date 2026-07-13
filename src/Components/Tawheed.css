@@ -1,0 +1,222 @@
+/* ==========================================
+   TAWHEED & ADHKAR — ANIMATIONS
+   ========================================== */
+
+/* === KEYFRAMES === */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { text-shadow: 0 0 8px rgba(240, 194, 75, 0.3); }
+  50%      { text-shadow: 0 0 20px rgba(240, 194, 75, 0.6), 0 0 40px rgba(240, 194, 75, 0.2); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes bounceIn {
+  0%   { opacity: 0; transform: scale(0.3); }
+  50%  { opacity: 1; transform: scale(1.05); }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes correctPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shakeSlight {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
+
+@keyframes fireFlicker {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.8; transform: scale(1.15); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes progressFill {
+  from { width: 0; }
+}
+
+/* === VIEW TRANSITIONS === */
+
+.tawheed-view-enter {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+/* === TITLE === */
+
+.tawheed-title {
+  animation: fadeInUp 0.6s ease-out;
+  background: linear-gradient(90deg, #F0C24B, #FFE08A, #F0C24B);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite, fadeInUp 0.6s ease-out;
+}
+
+.tawheed-stars {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* === BUTTONS === */
+
+.tawheed-btn-primary {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tawheed-btn-primary:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(240, 194, 75, 0.3);
+}
+
+.tawheed-btn-primary:active {
+  transform: scale(0.97);
+}
+
+.tawheed-btn-secondary {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tawheed-btn-secondary:hover {
+  transform: scale(1.04);
+  box-shadow: 0 4px 16px rgba(123, 224, 190, 0.25);
+}
+
+.tawheed-btn-secondary:active {
+  transform: scale(0.97);
+}
+
+/* === CARDS === */
+
+.tawheed-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tawheed-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Staggered card fade-in */
+.tawheed-card-stagger {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+.tawheed-card-stagger:nth-child(1)  { animation-delay: 0.05s; }
+.tawheed-card-stagger:nth-child(2)  { animation-delay: 0.1s; }
+.tawheed-card-stagger:nth-child(3)  { animation-delay: 0.15s; }
+.tawheed-card-stagger:nth-child(4)  { animation-delay: 0.2s; }
+.tawheed-card-stagger:nth-child(5)  { animation-delay: 0.25s; }
+.tawheed-card-stagger:nth-child(6)  { animation-delay: 0.3s; }
+.tawheed-card-stagger:nth-child(7)  { animation-delay: 0.35s; }
+.tawheed-card-stagger:nth-child(8)  { animation-delay: 0.4s; }
+.tawheed-card-stagger:nth-child(9)  { animation-delay: 0.45s; }
+.tawheed-card-stagger:nth-child(10) { animation-delay: 0.5s; }
+
+/* === QUIZ === */
+
+.quiz-question-enter {
+  animation: slideInRight 0.35s ease-out;
+}
+
+.quiz-option-btn {
+  transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.quiz-option-btn:not(:disabled):hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 12px rgba(123, 224, 190, 0.15);
+}
+
+.quiz-feedback-correct {
+  animation: correctPop 0.3s ease-out;
+}
+
+.quiz-feedback-wrong {
+  animation: shakeSlight 0.35s ease-out;
+}
+
+/* === STREAK === */
+
+.streak-fire {
+  display: inline-block;
+  animation: fireFlicker 0.6s ease-in-out infinite;
+}
+
+/* === RESULTS === */
+
+.results-trophy {
+  animation: bounceIn 0.6s ease-out;
+}
+
+.results-score {
+  animation: fadeInUp 0.5s ease-out 0.2s both;
+}
+
+.results-message {
+  animation: fadeIn 0.5s ease-out 0.4s both;
+}
+
+/* === WEEK PILLS === */
+
+.week-pill {
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.week-pill:hover {
+  transform: scale(1.06);
+}
+
+/* === PROGRESS BAR === */
+
+.progress-bar-fill {
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === SCORE BADGE === */
+
+.score-badge {
+  transition: transform 0.2s ease;
+}
+
+.score-badge-bump {
+  animation: correctPop 0.3s ease-out;
+}
+
+/* === FLOATING DECORATORS === */
+
+.floating-decor {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* === ARABIC TEXT === */
+
+.arabic-text-glow {
+  text-shadow: 0 0 12px rgba(240, 194, 75, 0.15);
+}

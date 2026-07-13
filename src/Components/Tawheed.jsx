@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import './Tawheed.css';
 
 // ==========================================
 // CENTRAL HANDOUT RESOURCES (EXACT TEXT)
@@ -24,7 +25,7 @@ const CURRICULUM_DATA = {
     }
   },
   3: {
-    title: "Week 3 — Kufr, Hypocrisy & Living It Out",
+    title: "Week 3 — Kufr, Hypocrisy & leaving It Out",
     description: "Understanding the Nullifiers of Islam, types of Kufr, and operational hypocrisy.",
     sessions: {
       7: { title: "Session 7: Latent Shirk & the Types of Kufr", sourceQ: [26, 27, 28, 29] },
@@ -303,28 +304,28 @@ export default function App() {
             VIEW: HOME SELECTION MENU
             ========================================== */}
         {view === 'menu' && (
-          <div style={{ textAlign: 'center', paddingTop: '2rem' }}>
-            <div style={{ color: '#F0C24B', fontSize: '1.3rem', letterSpacing: '0.5rem', marginBottom: '0.8rem' }}>✦ ✧ ✦</div>
-            <h1 style={{ fontFamily: "'Baloo 2', sans-serif", fontSize: '2.4rem', color: '#F0C24B', fontWeight: 800 }}>TAWHEED &amp; ADHKAR QUIZ</h1>
+          <div className="tawheed-view-enter" style={{ textAlign: 'center', paddingTop: '2rem' }}>
+            <div className="tawheed-stars floating-decor" style={{ color: '#F0C24B', fontSize: '1.3rem', letterSpacing: '0.5rem', marginBottom: '0.8rem' }}>✦ ✧ ✦</div>
+            <h1 className="tawheed-title" style={{ fontFamily: "'Baloo 2', sans-serif", fontSize: '2.4rem', fontWeight: 800 }}>TAWHEED &amp; ADHKAR QUIZ</h1>
             <p style={{ color: '#BFDBD1', marginTop: '0.6rem', fontSize: '1.05rem' }}>3 Weeks Course &middot; Straight-forward Multiple Choice Questions</p>
             
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', margin: '1.5rem 0', flexWrap: 'wrap' }}>
               <button onClick={() => { setSelectedWeek(1); setView('learn'); }} style={{
                 fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, fontSize: '1rem', background: '#7BE0BE', color: '#0A2C25', border: 'none', padding: '0.6rem 1.6rem', borderRadius: '999px', cursor: 'pointer'
-              }}>
+              }} className="tawheed-btn-secondary">
                 📖 Learn Tawheed 
               </button>
               <button onClick={() => setView('learn_adhkar')} style={{
                 fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, fontSize: '1rem', background: '#7BE0BE', color: '#0A2C25', border: 'none', padding: '0.6rem 1.6rem', borderRadius: '999px', cursor: 'pointer'
-              }}>
+              }} className="tawheed-btn-secondary">
                 🕌 Learn Daily Adhkar
               </button>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', margin: '2rem 0', flexWrap: 'wrap' }}>
-              <div style={{ background: '#124A3F', borderRadius: '999px', padding: '0.6rem 1.2rem', fontSize: '0.9rem', color: '#7BE0BE' }}>Week 1: Knowing Allah &amp; Iman</div>
-              <div style={{ background: '#124A3F', borderRadius: '999px', padding: '0.6rem 1.2rem', fontSize: '0.9rem', color: '#7BE0BE' }}>Week 2: Tawheed in Depth &amp; Shirk</div>
-              <div style={{ background: '#124A3F', borderRadius: '999px', padding: '0.6rem 1.2rem', fontSize: '0.9rem', color: '#7BE0BE' }}>Week 3: Kufr, Hypocrisy &amp; Actions</div>
+              <div className="week-pill" style={{ background: '#124A3F', borderRadius: '999px', padding: '0.6rem 1.2rem', fontSize: '0.9rem', color: '#7BE0BE' }}>Week 1: Knowing Allah &amp; Iman</div>
+              <div className="week-pill" style={{ background: '#124A3F', borderRadius: '999px', padding: '0.6rem 1.2rem', fontSize: '0.9rem', color: '#7BE0BE' }}>Week 2: Tawheed in Depth &amp; Shirk</div>
+              <div className="week-pill" style={{ background: '#124A3F', borderRadius: '999px', padding: '0.6rem 1.2rem', fontSize: '0.9rem', color: '#7BE0BE' }}>Week 3: Kufr, Hypocrisy &amp; Actions</div>
             </div>
 
             <div style={{ background: '#124A3F', borderRadius: '16px', padding: '1.5rem', textAlign: 'left', marginBottom: '2rem' }}>
@@ -333,10 +334,10 @@ export default function App() {
                 {[1, 2, 3].map(wk => {
                   const locked = wk > unlockedWeek;
                   return (
-                    <div key={wk} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 1rem', background: '#155B4D', borderRadius: '12px', opacity: locked ? 0.45 : 1 }}>
+                    <div key={wk} className="tawheed-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 1rem', background: '#155B4D', borderRadius: '12px', opacity: locked ? 0.45 : 1 }}>
                       <div style={{ flex: 1 }}>
                         <span style={{ fontSize: '0.8rem', color: '#7BE0BE', fontWeight: 600 }}>WEEK 0{wk}</span>
-                        <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>{wk === 1 ? 'Knowing Allah & Iman' : wk === 2 ? 'Tawheed in Depth & Shirk' : 'Kufr, Hypocrisy & Living It Out'}</p>
+                        <p style={{ margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>{wk === 1 ? 'Knowing Allah & Iman' : wk === 2 ? 'Tawheed in Depth & Shirk' : 'Kufr, Hypocrisy & leaving It Out'}</p>
                       </div>
                       <button disabled={locked} onClick={() => startQuizEngine(`week${wk}`)} style={{
                         background: locked ? '#0E3B32' : '#F0C24B', color: locked ? '#BFDBD1' : '#1A1A1A', border: 'none', padding: '0.4rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 'bold', cursor: locked ? 'default' : 'pointer'
@@ -349,10 +350,10 @@ export default function App() {
               </div>
             </div>
 
-            <button onClick={() => startQuizEngine('all')} style={{
+            <button className="tawheed-btn-primary" onClick={() => startQuizEngine('all')} style={{
               fontFamily: "'Baloo 2', sans-serif", fontWeight: 800, fontSize: '1.2rem', letterSpacing: '0.5px',
               background: '#F0C24B', color: '#1A1A1A', border: 'none', padding: '0.9rem 2.2rem', borderRadius: '999px',
-              cursor: 'pointer', transition: 'transform 0.15s ease'
+              cursor: 'pointer'
             }}>Start Full Quiz →</button>
           </div>
         )}
@@ -373,7 +374,7 @@ export default function App() {
               </div>
             </div>
 
-            <h2 style={{ fontFamily: "'Baloo 2', sans-serif", color: '#F0C24B', fontSize: '1.8rem', marginBottom: '1rem' }}>{selectedWeek === 1 ? 'Week 1 — Knowing Allah & Iman' : selectedWeek === 2 ? 'Week 2 — Tawheed in Depth & Shirk' : 'Week 3 — Kufr, Hypocrisy & Living It Out'}</h2>
+            <h2 style={{ fontFamily: "'Baloo 2', sans-serif", color: '#F0C24B', fontSize: '1.8rem', marginBottom: '1rem' }}>{selectedWeek === 1 ? 'Week 1 — Knowing Allah & Iman' : selectedWeek === 2 ? 'Week 2 — Tawheed in Depth & Shirk' : 'Week 3 — Kufr, Hypocrisy & leaving It Out'}</h2>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               {Object.entries(CURRICULUM_DATA[selectedWeek].sessions).map(([id, s]) => (
@@ -402,17 +403,17 @@ export default function App() {
             VIEW: LEARN ADHKAR REFERENCE SECTION[cite: 1]
             ========================================== */}
         {view === 'learn_adhkar' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+          <div className="tawheed-view-enter" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <button onClick={() => setView('menu')} style={{ color: '#7BE0BE', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }}>← Back to Menu</button>
-              <button onClick={startAdhkarQuiz} style={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, fontSize: '0.9rem', background: '#F0C24B', color: '#1A1A1A', border: 'none', padding: '0.5rem 1.2rem', borderRadius: '999px', cursor: 'pointer' }}>
+              <button className="tawheed-btn-primary" onClick={startAdhkarQuiz} style={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, fontSize: '0.9rem', background: '#F0C24B', color: '#1A1A1A', border: 'none', padding: '0.5rem 1.2rem', borderRadius: '999px', cursor: 'pointer' }}>
                 Start Adhkar Quiz
               </button>
             </div>
             <h2 style={{ fontFamily: "'Baloo 2', sans-serif", color: '#F0C24B', fontSize: '1.8rem', margin: 0 }}>🕌 Adhkar Study Guide</h2>
             
             {ADHKAR_POOL.map((item) => (
-              <div key={item.id} style={{ background: '#124A3F', borderRadius: '16px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+              <div key={item.id} className="tawheed-card-stagger tawheed-card" style={{ background: '#124A3F', borderRadius: '16px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                 <span style={{ color: '#7BE0BE', fontSize: '0.85rem', fontWeight: 'bold' }}>{item.situation}</span>
                 <p style={{ fontFamily: "'Noto Naskh Arabic', serif", fontSize: '1.5rem', color: '#F0C24B', margin: 0, textAlign: 'right', lineHeight: 2 }} dir="rtl">{item.arabic}</p>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#FBF7EC', fontStyle: 'italic' }}>{item.translit}</p>
@@ -442,11 +443,11 @@ export default function App() {
             </div>
             
             <div style={{ color: '#7BE0BE', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.5px', marginBottom: '0.4rem' }}>
-              {questions[current]?.week === 1 ? 'Week 1 — Knowing Allah & Iman' : questions[current]?.week === 2 ? 'Week 2 — Tawheed in Depth & Shirk' : 'Week 3 — Kufr, Hypocrisy & Living It Out'}
+              {questions[current]?.week === 1 ? 'Week 1 — Knowing Allah & Iman' : questions[current]?.week === 2 ? 'Week 2 — Tawheed in Depth & Shirk' : 'Week 3 — Kufr, Hypocrisy & leaving It Out'}
             </div>
             <div style={{ color: '#BFDBD1', fontSize: '0.85rem', marginBottom: '1.2rem' }}>Question {current + 1} of {questions.length}</div>
 
-            <div style={{ background: '#124A3F', borderRadius: '16px', padding: '1.6rem' }}>
+            <div key={current} className="quiz-question-enter" style={{ background: '#124A3F', borderRadius: '16px', padding: '1.6rem' }}>
               <h2 style={{ fontSize: '1.3rem', lineHeight: 1.4, fontWeight: 700, color: '#FBF7EC' }}>{questions[current]?.q}</h2>
               
               <div style={{ marginTop: '1.3rem', display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
@@ -465,10 +466,9 @@ export default function App() {
                   }
 
                   return (
-                    <button key={idx} disabled={answered} onClick={() => selectOption(idx)} style={{
+                    <button key={idx} className="quiz-option-btn" disabled={answered} onClick={() => selectOption(idx)} style={{
                       textAlign: 'left', background: bgStyle, border: borderStyle, color: '#FBF7EC',
-                      padding: '0.8rem 1rem', borderRadius: '12px', fontSize: '1rem', cursor: answered ? 'default' : 'pointer',
-                      transition: 'all 0.15s ease'
+                      padding: '0.8rem 1rem', borderRadius: '12px', fontSize: '1rem', cursor: answered ? 'default' : 'pointer'
                     }}>
                       {opt}
                     </button>
@@ -477,7 +477,7 @@ export default function App() {
               </div>
 
               {answered && (
-                <div style={{
+                <div className={selectedOptIdx === questions[current].correct ? 'quiz-feedback-correct' : 'quiz-feedback-wrong'} style={{
                   marginTop: '1rem', padding: '0.9rem 1.1rem', borderRadius: '12px', fontSize: '0.92rem',
                   background: selectedOptIdx === questions[current].correct ? 'rgba(95,203,140,0.15)' : 'rgba(226,104,90,0.25)',
                   color: selectedOptIdx === questions[current].correct ? '#5FCB8C' : '#E2685A'
@@ -490,12 +490,12 @@ export default function App() {
               )}
 
               <div style={{ color: '#F0C24B', fontSize: '0.85rem', marginTop: '0.5rem', minHeight: '1.2em' }}>
-                {streak >= 2 ? `🔥 ${streak} in a row!` : ''}
+                {streak >= 2 ? <span className="streak-fire">🔥 {streak} in a row!</span> : ''}
               </div>
 
               {answered && (
                 <div style={{ textAlign: 'right', marginTop: '1.3rem' }}>
-                  <button onClick={nextQuestion} style={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, background: '#7BE0BE', color: '#0A2C25', border: 'none', padding: '0.6rem 1.6rem', borderRadius: '999px', cursor: 'pointer' }}>
+                  <button className="tawheed-btn-secondary" onClick={nextQuestion} style={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, background: '#7BE0BE', color: '#0A2C25', border: 'none', padding: '0.6rem 1.6rem', borderRadius: '999px', cursor: 'pointer' }}>
                     {current + 1 === questions.length ? 'Show Results →' : 'Next Question →'}
                   </button>
                 </div>
@@ -508,20 +508,20 @@ export default function App() {
             VIEW: PERFORMANCE METRICS OUTCOME
             ========================================== */}
         {view === 'results' && (
-          <div style={{ textAlign: 'center', paddingTop: '2rem' }}>
-            <div style={{ fontSize: '3rem' }}>{(score / questions.length) >= 0.7 ? '🏆' : '📖'}</div>
+          <div className="tawheed-view-enter" style={{ textAlign: 'center', paddingTop: '2rem' }}>
+            <div className="results-trophy" style={{ fontSize: '3rem' }}>{(score / questions.length) >= 0.7 ? '🏆' : '📖'}</div>
             <h2 style={{ fontFamily: "'Baloo 2', sans-serif", fontSize: '1.8rem', color: '#F0C24B', marginTop: '0.6rem' }}>Your Results</h2>
-            <div style={{ fontSize: '3rem', fontWeight: 800, color: '#FBF7EC', margin: '0.6rem 0', fontFamily: "'Baloo 2', sans-serif" }}>
+            <div className="results-score" style={{ fontSize: '3rem', fontWeight: 800, color: '#FBF7EC', margin: '0.6rem 0', fontFamily: "'Baloo 2', sans-serif" }}>
               {score} / {questions.length} ({Math.round((score / questions.length) * 100)}%)
             </div>
             
-            <p style={{ color: '#BFDBD1', maxWidth: '30rem', margin: '0.6rem auto 1.6rem' }}>
+            <p className="results-message" style={{ color: '#BFDBD1', maxWidth: '30rem', margin: '0.6rem auto 1.6rem' }}>
               {(score / questions.length) >= 0.7 
                 ? "Mashallah! Excellent score. Keep it up!"
                 : "You didn't pass this time. Please review the material and try again."}
             </p>
 
-            <button onClick={() => setView('menu')} style={{
+            <button className="tawheed-btn-primary" onClick={() => setView('menu')} style={{
               fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, fontSize: '1.1rem', background: '#F0C24B', color: '#1A1A1A', border: 'none', padding: '0.9rem 2.2rem', borderRadius: '999px', cursor: 'pointer'
             }}>Return to Menu</button>
           </div>
@@ -617,7 +617,7 @@ export default function App() {
 
               {adhkarAnswered && (
                 <div style={{ textAlign: 'right', marginTop: '1.3rem' }}>
-                  <button onClick={nextAdhkarQuestion} style={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, background: '#7BE0BE', color: '#0A2C25', border: 'none', padding: '0.6rem 1.6rem', borderRadius: '999px', cursor: 'pointer' }}>
+                  <button className="tawheed-btn-secondary" onClick={nextAdhkarQuestion} style={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, background: '#7BE0BE', color: '#0A2C25', border: 'none', padding: '0.6rem 1.6rem', borderRadius: '999px', cursor: 'pointer' }}>
                     {adhkarCurrent + 1 === adhkarQuizQs.length ? 'Show Results →' : 'Next Question →'}
                   </button>
                 </div>
@@ -630,24 +630,24 @@ export default function App() {
             VIEW: ADHKAR QUIZ RESULTS
             ========================================== */}
         {view === 'adhkar_results' && (
-          <div style={{ textAlign: 'center', paddingTop: '2rem' }}>
-            <div style={{ fontSize: '3rem' }}>{(adhkarScore / adhkarQuizQs.length) >= 0.7 ? '🏆' : '📖'}</div>
+          <div className="tawheed-view-enter" style={{ textAlign: 'center', paddingTop: '2rem' }}>
+            <div className="results-trophy" style={{ fontSize: '3rem' }}>{(adhkarScore / adhkarQuizQs.length) >= 0.7 ? '🏆' : '📖'}</div>
             <h2 style={{ fontFamily: "'Baloo 2', sans-serif", fontSize: '1.8rem', color: '#F0C24B', marginTop: '0.6rem' }}>Adhkar Quiz Results</h2>
-            <div style={{ fontSize: '3rem', fontWeight: 800, color: '#FBF7EC', margin: '0.6rem 0', fontFamily: "'Baloo 2', sans-serif" }}>
+            <div className="results-score" style={{ fontSize: '3rem', fontWeight: 800, color: '#FBF7EC', margin: '0.6rem 0', fontFamily: "'Baloo 2', sans-serif" }}>
               {adhkarScore} / {adhkarQuizQs.length} ({Math.round((adhkarScore / adhkarQuizQs.length) * 100)}%)
             </div>
 
-            <p style={{ color: '#BFDBD1', maxWidth: '30rem', margin: '0.6rem auto 1.6rem' }}>
+            <p className="results-message" style={{ color: '#BFDBD1', maxWidth: '30rem', margin: '0.6rem auto 1.6rem' }}>
               {(adhkarScore / adhkarQuizQs.length) >= 0.7
                 ? "Mashallah! You know your daily adhkar well. Keep it up!"
                 : "Keep studying the adhkar and try again. You'll get there!"}
             </p>
 
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <button onClick={startAdhkarQuiz} style={{
+              <button className="tawheed-btn-secondary" onClick={startAdhkarQuiz} style={{
                 fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, fontSize: '1rem', background: '#7BE0BE', color: '#0A2C25', border: 'none', padding: '0.8rem 1.8rem', borderRadius: '999px', cursor: 'pointer'
               }}>Try Again</button>
-              <button onClick={() => setView('learn_adhkar')} style={{
+              <button className="tawheed-btn-primary" onClick={() => setView('learn_adhkar')} style={{
                 fontFamily: "'Baloo 2', sans-serif", fontWeight: 700, fontSize: '1rem', background: '#F0C24B', color: '#1A1A1A', border: 'none', padding: '0.8rem 1.8rem', borderRadius: '999px', cursor: 'pointer'
               }}>Back to Study Guide</button>
             </div>
