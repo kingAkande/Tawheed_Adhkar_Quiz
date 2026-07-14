@@ -307,7 +307,7 @@ export default function App() {
           <div className="tawheed-view-enter" style={{ textAlign: 'center', paddingTop: '2rem' }}>
             <div className="tawheed-stars floating-decor" style={{ color: '#F0C24B', fontSize: '1.3rem', letterSpacing: '0.5rem', marginBottom: '0.8rem' }}>✦ ✧ ✦</div>
             <h1 className="tawheed-title" style={{ fontFamily: "'Baloo 2', sans-serif", fontSize: '2.4rem', fontWeight: 800 }}>TAWHEED &amp; ADHKAR QUIZ</h1>
-            <p style={{ color: '#BFDBD1', marginTop: '0.6rem', fontSize: '1.05rem' }}>3 Weeks Course &middot; Straight-forward Multiple Choice Questions</p>
+            <p style={{ color: '#BFDBD1', marginTop: '0.6rem', fontSize: '1.05rem' }}>Know Allah &middot;  Remember Him &middot; Live by It</p>
             
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', margin: '1.5rem 0', flexWrap: 'wrap' }}>
               <button onClick={() => { setSelectedWeek(1); setView('learn'); }} style={{
