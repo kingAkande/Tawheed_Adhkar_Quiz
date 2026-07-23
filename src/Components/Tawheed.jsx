@@ -123,31 +123,65 @@ const ADHKAR_POOL = [
 ];
 
 export default function App() {
-  const [view, setView] = useState('menu'); 
+  // Helper: load saved quiz session (returns null if none)
+  const loadQuizSession = () => {
+    try {
+      const raw = sessionStorage.getItem('tawheed_quiz_session');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  };
+
+  const savedSession = React.useRef(loadQuizSession());
+
+  const [view, setView] = useState(savedSession.current?.view || 'menu'); 
   const [unlockedWeek, setUnlockedWeek] = useState(3);
-  const [selectedWeek, setSelectedWeek] = useState(1);
+  const [selectedWeek, setSelectedWeek] = useState(savedSession.current?.selectedWeek || 1);
   const [selectedSession, setSelectedSession] = useState(null);
   
   // Quiz states
-  const [quizMode, setQuizMode] = useState('all'); 
-  const [questions, setQuestions] = useState([]);
-  const [current, setCurrent] = useState(0);
-  const [score, setScore] = useState(0);
-  const [streak, setStreak] = useState(0);
-  const [answered, setAnswered] = useState(false);
-  const [selectedOptIdx, setSelectedOptIdx] = useState(null);
-  const [weekScores, setWeekScores] = useState({
+  const [quizMode, setQuizMode] = useState(savedSession.current?.quizMode || 'all'); 
+  const [questions, setQuestions] = useState(savedSession.current?.questions || []);
+  const [current, setCurrent] = useState(savedSession.current?.current || 0);
+  const [score, setScore] = useState(savedSession.current?.score || 0);
+  const [streak, setStreak] = useState(savedSession.current?.streak || 0);
+  const [answered, setAnswered] = useState(savedSession.current?.answered || false);
+  const [selectedOptIdx, setSelectedOptIdx] = useState(savedSession.current?.selectedOptIdx ?? null);
+  const [weekScores, setWeekScores] = useState(savedSession.current?.weekScores || {
     1: { correct: 0, total: 0 },
     2: { correct: 0, total: 0 },
     3: { correct: 0, total: 0 }
   });
 
   // Adhkar quiz states
-  const [adhkarQuizQs, setAdhkarQuizQs] = useState([]);
-  const [adhkarCurrent, setAdhkarCurrent] = useState(0);
-  const [adhkarScore, setAdhkarScore] = useState(0);
-  const [adhkarAnswered, setAdhkarAnswered] = useState(false);
-  const [adhkarSelectedIdx, setAdhkarSelectedIdx] = useState(null);
+  const [adhkarQuizQs, setAdhkarQuizQs] = useState(savedSession.current?.adhkarQuizQs || []);
+  const [adhkarCurrent, setAdhkarCurrent] = useState(savedSession.current?.adhkarCurrent || 0);
+  const [adhkarScore, setAdhkarScore] = useState(savedSession.current?.adhkarScore || 0);
+  const [adhkarAnswered, setAdhkarAnswered] = useState(savedSession.current?.adhkarAnswered || false);
+  const [adhkarSelectedIdx, setAdhkarSelectedIdx] = useState(savedSession.current?.adhkarSelectedIdx ?? null);
+
+  // Audio playback state for Adhkar study guide
+  const [playingAdhkarId, setPlayingAdhkarId] = useState(null);
+  const [audioSpeed, setAudioSpeed] = useState(1);
+  const [audioRepeat, setAudioRepeat] = useState(false);
+  // Track which adhkar text is currently loaded (for repeat)
+  const currentAdhkarTextRef = React.useRef(null);
+
+  // Persist quiz state to sessionStorage on changes
+  useEffect(() => {
+    const quizViews = ['quiz', 'adhkar_quiz', 'learn', 'learn_adhkar'];
+    if (quizViews.includes(view)) {
+      const snapshot = {
+        view, selectedWeek, quizMode, questions, current, score, streak,
+        answered, selectedOptIdx, weekScores,
+        adhkarQuizQs, adhkarCurrent, adhkarScore, adhkarAnswered, adhkarSelectedIdx
+      };
+      sessionStorage.setItem('tawheed_quiz_session', JSON.stringify(snapshot));
+    } else {
+      // Clear saved state when on menu / results (quiz is done or not started)
+      sessionStorage.removeItem('tawheed_quiz_session');
+    }
+  }, [view, current, score, streak, answered, selectedOptIdx,
+      adhkarCurrent, adhkarScore, adhkarAnswered, adhkarSelectedIdx]);
 
   useEffect(() => {
     const saved = localStorage.getItem('tawheed_quiz_unlockedWeek');
@@ -163,6 +197,88 @@ export default function App() {
       localStorage.setItem('tawheed_quiz_unlockedWeek', '3');
     }
   }, []);
+
+  // Ref to hold the current Audio instance for adhkar playback
+  const audioRef = React.useRef(null);
+
+  // Clean up audio when leaving the adhkar study guide
+  useEffect(() => {
+    if (view !== 'learn_adhkar') {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setPlayingAdhkarId(null);
+    }
+  }, [view]);
+
+  // Apply speed changes to the active audio in real-time
+  const changeSpeed = (speed) => {
+    setAudioSpeed(speed);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = speed;
+    }
+  };
+
+  // Toggle repeat mode
+  const toggleRepeat = () => {
+    setAudioRepeat(prev => {
+      const next = !prev;
+      if (audioRef.current) {
+        audioRef.current.loop = next;
+      }
+      return next;
+    });
+  };
+
+  const playArabicAudio = (adhkarId, arabicText) => {
+    // If the same dhikr is already playing, stop it
+    if (playingAdhkarId === adhkarId) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setPlayingAdhkarId(null);
+      currentAdhkarTextRef.current = null;
+      return;
+    }
+
+    // Stop any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+
+    // Use local proxy to fetch Google TTS audio (avoids CORS)
+    const ttsUrl = `/api/tts?tl=ar&q=${encodeURIComponent(arabicText)}`;
+
+    const audio = new Audio(ttsUrl);
+    audio.playbackRate = audioSpeed;
+    audio.loop = audioRepeat;
+    audioRef.current = audio;
+    currentAdhkarTextRef.current = arabicText;
+
+    setPlayingAdhkarId(adhkarId);
+
+    audio.onended = () => {
+      if (!audioRepeat) {
+        setPlayingAdhkarId(null);
+        audioRef.current = null;
+        currentAdhkarTextRef.current = null;
+      }
+    };
+    audio.onerror = () => {
+      setPlayingAdhkarId(null);
+      audioRef.current = null;
+      currentAdhkarTextRef.current = null;
+    };
+
+    audio.play().catch(() => {
+      setPlayingAdhkarId(null);
+      audioRef.current = null;
+      currentAdhkarTextRef.current = null;
+    });
+  };
 
   const startQuizEngine = (mode) => {
     const activeMode = mode || quizMode;
@@ -412,10 +528,98 @@ export default function App() {
             </div>
             <h2 style={{ fontFamily: "'Baloo 2', sans-serif", color: '#F0C24B', fontSize: '1.8rem', margin: 0 }}>🕌 Adhkar Study Guide</h2>
             
+            {/* Audio Controls Bar — Speed & Repeat */}
+            <div className="audio-controls-bar" style={{
+              background: '#0E3B32', borderRadius: '14px', padding: '0.9rem 1.2rem',
+              display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap',
+              border: '1px solid rgba(123, 224, 190, 0.15)', position: 'sticky', top: '0', zIndex: 10
+            }}>
+              <span style={{ color: '#7BE0BE', fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Speed</span>
+              <div style={{ display: 'flex', gap: '0.35rem' }}>
+                {[0.5, 0.75, 1, 1.25, 1.5].map(spd => (
+                  <button
+                    key={spd}
+                    onClick={() => changeSpeed(spd)}
+                    className="speed-pill"
+                    style={{
+                      background: audioSpeed === spd ? '#F0C24B' : 'rgba(240, 194, 75, 0.12)',
+                      color: audioSpeed === spd ? '#0A2C25' : '#F0C24B',
+                      border: audioSpeed === spd ? '1.5px solid #F0C24B' : '1.5px solid rgba(240, 194, 75, 0.3)',
+                      borderRadius: '999px',
+                      padding: '0.25rem 0.65rem',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {spd}x
+                  </button>
+                ))}
+              </div>
+              <div style={{ width: '1px', height: '20px', background: 'rgba(123, 224, 190, 0.2)' }} />
+              <button
+                onClick={toggleRepeat}
+                className={`repeat-toggle ${audioRepeat ? 'repeat-toggle-active' : ''}`}
+                title={audioRepeat ? 'Repeat: ON' : 'Repeat: OFF'}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '0.4rem',
+                  background: audioRepeat ? 'rgba(123, 224, 190, 0.2)' : 'transparent',
+                  color: audioRepeat ? '#7BE0BE' : '#BFDBD1',
+                  border: audioRepeat ? '1.5px solid #7BE0BE' : '1.5px solid rgba(191, 219, 209, 0.3)',
+                  borderRadius: '999px',
+                  padding: '0.25rem 0.75rem',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                🔁 {audioRepeat ? 'ON' : 'OFF'}
+              </button>
+            </div>
+
             {ADHKAR_POOL.map((item) => (
               <div key={item.id} className="tawheed-card-stagger tawheed-card" style={{ background: '#124A3F', borderRadius: '16px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                 <span style={{ color: '#7BE0BE', fontSize: '0.85rem', fontWeight: 'bold' }}>{item.situation}</span>
-                <p style={{ fontFamily: "'Noto Naskh Arabic', serif", fontSize: '1.5rem', color: '#F0C24B', margin: 0, textAlign: 'right', lineHeight: 2 }} dir="rtl">{item.arabic}</p>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.8rem' }}>
+                  <p style={{ fontFamily: "'Noto Naskh Arabic', serif", fontSize: '1.5rem', color: '#F0C24B', margin: 0, textAlign: 'right', lineHeight: 2, flex: 1 }} dir="rtl">{item.arabic}</p>
+                  <button
+                    onClick={() => playArabicAudio(item.id, item.arabic)}
+                    className={`adhkar-play-btn ${playingAdhkarId === item.id ? 'adhkar-play-btn-active' : ''}`}
+                    title={playingAdhkarId === item.id ? 'Stop audio' : 'Listen in Arabic'}
+                    style={{
+                      background: playingAdhkarId === item.id ? '#F0C24B' : 'rgba(240, 194, 75, 0.15)',
+                      color: playingAdhkarId === item.id ? '#0A2C25' : '#F0C24B',
+                      border: '2px solid #F0C24B',
+                      borderRadius: '50%',
+                      width: '42px',
+                      height: '42px',
+                      minWidth: '42px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      fontSize: '1.15rem',
+                      marginTop: '0.4rem',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    {playingAdhkarId === item.id ? '⏹' : '🔊'}
+                  </button>
+                </div>
+                {/* Show active speed indicator when this item is playing */}
+                {playingAdhkarId === item.id && (
+                  <div className="audio-active-indicator" style={{
+                    display: 'flex', alignItems: 'center', gap: '0.6rem',
+                    fontSize: '0.75rem', color: '#BFDBD1'
+                  }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span className="audio-wave">〰️</span> Playing at {audioSpeed}x
+                    </span>
+                    {audioRepeat && <span style={{ color: '#7BE0BE' }}>• Repeat ON</span>}
+                  </div>
+                )}
                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#FBF7EC', fontStyle: 'italic' }}>{item.translit}</p>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#BFDBD1' }}>{item.meaning}</p>
               </div>
