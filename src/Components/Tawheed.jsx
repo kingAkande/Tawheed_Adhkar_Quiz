@@ -163,9 +163,6 @@ export default function App() {
   const [playingAdhkarId, setPlayingAdhkarId] = useState(null);
   const [audioSpeed, setAudioSpeed] = useState(1);
   const [audioRepeat, setAudioRepeat] = useState(false);
-  // Track which adhkar text is currently loaded (for repeat)
-  const currentAdhkarTextRef = React.useRef(null);
-
   // Persist quiz state to sessionStorage on changes
   useEffect(() => {
     const quizViews = ['quiz', 'adhkar_quiz', 'learn', 'learn_adhkar'];
@@ -198,86 +195,62 @@ export default function App() {
     }
   }, []);
 
-  // Ref to hold the current Audio instance for adhkar playback
-  const audioRef = React.useRef(null);
-
-  // Clean up audio when leaving the adhkar study guide
+  // Clean up speech synthesis when leaving the adhkar study guide
   useEffect(() => {
     if (view !== 'learn_adhkar') {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
+      window.speechSynthesis.cancel();
       setPlayingAdhkarId(null);
     }
   }, [view]);
 
-  // Apply speed changes to the active audio in real-time
+  // Apply speed changes — will take effect on next play
   const changeSpeed = (speed) => {
     setAudioSpeed(speed);
-    if (audioRef.current) {
-      audioRef.current.playbackRate = speed;
-    }
   };
 
-  // Toggle repeat mode
+  // Toggle repeat mode — will take effect on next play
   const toggleRepeat = () => {
-    setAudioRepeat(prev => {
-      const next = !prev;
-      if (audioRef.current) {
-        audioRef.current.loop = next;
-      }
-      return next;
-    });
+    setAudioRepeat(prev => !prev);
   };
 
   const playArabicAudio = (adhkarId, arabicText) => {
     // If the same dhikr is already playing, stop it
     if (playingAdhkarId === adhkarId) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
+      window.speechSynthesis.cancel();
       setPlayingAdhkarId(null);
-      currentAdhkarTextRef.current = null;
       return;
     }
 
-    // Stop any currently playing audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
+    // Stop any currently playing speech
+    window.speechSynthesis.cancel();
 
-    // Use local proxy to fetch Google TTS audio (avoids CORS)
-    const ttsUrl = `/api/tts?tl=ar&q=${encodeURIComponent(arabicText)}`;
+    const utterance = new SpeechSynthesisUtterance(arabicText);
+    utterance.lang = 'ar-SA';
+    utterance.rate = audioSpeed;
 
-    const audio = new Audio(ttsUrl);
-    audio.playbackRate = audioSpeed;
-    audio.loop = audioRepeat;
-    audioRef.current = audio;
-    currentAdhkarTextRef.current = arabicText;
+    // Pick an Arabic voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const arabicVoice = voices.find(v => v.lang.startsWith('ar'));
+    if (arabicVoice) utterance.voice = arabicVoice;
 
-    setPlayingAdhkarId(adhkarId);
-
-    audio.onended = () => {
-      if (!audioRepeat) {
+    utterance.onend = () => {
+      if (audioRepeat) {
+        // Re-speak the same utterance for repeat mode
+        const repeatUtterance = new SpeechSynthesisUtterance(arabicText);
+        repeatUtterance.lang = 'ar-SA';
+        repeatUtterance.rate = audioSpeed;
+        if (arabicVoice) repeatUtterance.voice = arabicVoice;
+        repeatUtterance.onend = utterance.onend;
+        repeatUtterance.onerror = () => setPlayingAdhkarId(null);
+        window.speechSynthesis.speak(repeatUtterance);
+      } else {
         setPlayingAdhkarId(null);
-        audioRef.current = null;
-        currentAdhkarTextRef.current = null;
       }
     };
-    audio.onerror = () => {
-      setPlayingAdhkarId(null);
-      audioRef.current = null;
-      currentAdhkarTextRef.current = null;
-    };
+    utterance.onerror = () => setPlayingAdhkarId(null);
 
-    audio.play().catch(() => {
-      setPlayingAdhkarId(null);
-      audioRef.current = null;
-      currentAdhkarTextRef.current = null;
-    });
+    setPlayingAdhkarId(adhkarId);
+    window.speechSynthesis.speak(utterance);
   };
 
   const startQuizEngine = (mode) => {
